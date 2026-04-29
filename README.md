@@ -1,4 +1,4 @@
-# 📡 BT Chat — Chat em grupo via Bluetooth
+# 📡 Element Chat— Chat em grupo via Bluetooth
 
 App Flutter para chat em grupo **sem internet**, usando Bluetooth Clássico (SPP) com fallback para Wi-Fi Direct e criptografia E2E.
 
