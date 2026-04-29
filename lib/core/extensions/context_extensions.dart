@@ -15,7 +15,6 @@ extension BuildContextExtensions on BuildContext {
 }
 
 extension ColorsExtension on BuildContext {
-  ElementPalette get element => ElementPalette();
   Color get primary => ElementPalette.primary;
   Color get accent => ElementPalette.accent;
   Color get success => ElementPalette.success;

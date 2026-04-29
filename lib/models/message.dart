@@ -80,7 +80,7 @@ Uint8List compressMessage(String data) {
     return Uint8List.fromList(utf8.encode(data));
   }
   final compressed = GZipEncoder().encode(utf8.encode(data));
-  return compressed ?? Uint8List.fromList(utf8.encode(data));
+  return Uint8List.fromList(compressed ?? utf8.encode(data));
 }
 
 String decompressMessage(Uint8List data) {

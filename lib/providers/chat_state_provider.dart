@@ -71,7 +71,8 @@ class ChatStateProvider extends ChangeNotifier {
       }
       
       if (_messages.length > 200) {
-        final removed = _messages.removeRange(0, _messages.length - 200);
+        final removed = _messages.sublist(0, _messages.length - 200);
+        _messages.removeRange(0, _messages.length - 200);
         for (final msg in removed) {
           _messageCache.removeMessage(msg.id);
         }
