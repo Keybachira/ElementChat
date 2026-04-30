@@ -1,6 +1,6 @@
 {
-    "name": "element_chat",
-    "short_name": "element_chat",
+    "name": "ElementChat",
+    "short_name": "ElementChat",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

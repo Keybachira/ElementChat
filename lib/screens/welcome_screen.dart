@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import '../managers/identity_manager.dart';
 import '../controllers/mesh_controller.dart';
 import '../services/message_store.dart';
+import '../services/share_service.dart';
 import 'discovery_screen.dart';
 import 'settings_screen.dart';
 
@@ -91,6 +93,48 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     );
   }
 
+  Future<void> _shareAppFromWelcome() async {
+    final identity = IdentityManager();
+    final userName = _nameController.text.trim().isNotEmpty
+        ? _nameController.text.trim()
+        : identity.userName;
+
+    final result = await ShareService.shareAppInvite(
+      context: context,
+      userName: userName,
+    );
+
+    if (!mounted) return;
+
+    final messenger = ScaffoldMessenger.of(context);
+    switch (result.status) {
+      case ShareResultStatus.success:
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Convite partilhado. Agora ficou facil chamar mais gente.'),
+            backgroundColor: Color(0xFF00C853),
+          ),
+        );
+        break;
+      case ShareResultStatus.dismissed:
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('A partilha foi cancelada. Podes tentar de novo a qualquer momento.'),
+            backgroundColor: Color(0xFF445566),
+          ),
+        );
+        break;
+      case ShareResultStatus.unavailable:
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Nao foi possivel abrir a partilha neste dispositivo.'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,6 +172,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                 _buildNameForm(),
                 const SizedBox(height: 24),
                 _buildStartButton(),
+                const SizedBox(height: 14),
+                _buildShareShortcut(),
                 const SizedBox(height: 20),
                 if (_myAddress.isNotEmpty) _buildDeviceInfo(),
                 const Spacer(),
@@ -145,12 +191,15 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF00E5FF).withOpacity(0.2), const Color(0xFF00E5FF).withOpacity(0.05)],
+          colors: [
+            const Color(0xFF00E5FF).withValues(alpha: 0.2),
+            const Color(0xFF00E5FF).withValues(alpha: 0.05),
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF00E5FF).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF00E5FF).withValues(alpha: 0.3)),
       ),
       child: const Icon(Icons.bluetooth_searching, size: 32, color: Color(0xFF00E5FF)),
     );
@@ -171,7 +220,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
         ),
         const SizedBox(height: 8),
         const Text(
-          'BT Chat',
+          'Element Chat',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.w900,
@@ -294,7 +343,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
         style: ElevatedButton.styleFrom(
           backgroundColor: const Color(0xFF00E5FF),
           foregroundColor: const Color(0xFF0A0E1A),
-          disabledBackgroundColor: const Color(0xFF00E5FF).withOpacity(0.5),
+          disabledBackgroundColor: const Color(0xFF00E5FF).withValues(alpha: 0.5),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
@@ -322,6 +371,85 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     );
   }
 
+  Widget _buildShareShortcut() {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: _shareAppFromWelcome,
+        borderRadius: BorderRadius.circular(18),
+        child: Ink(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [
+                Color(0xFF171F34),
+                Color(0xFF111827),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFF1E2D42)),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 46,
+                height: 46,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00E5FF).withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(Icons.share_rounded, color: Color(0xFF00E5FF)),
+              ),
+              const SizedBox(width: 14),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Chamar o teu grupo',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 4),
+                    Text(
+                      'Partilha o app em um toque e faz a rede crescer mais rapido.',
+                      style: TextStyle(
+                        color: Color(0xFF8A97AB),
+                        fontSize: 12,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00E5FF).withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(999),
+                ),
+                child: const Text(
+                  '1 toque',
+                  style: TextStyle(
+                    color: Color(0xFF00E5FF),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDeviceInfo() {
     return Container(
       padding: const EdgeInsets.all(14),
@@ -335,7 +463,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: const Color(0xFF00E5FF).withOpacity(0.1),
+              color: const Color(0xFF00E5FF).withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: const Icon(Icons.phone_android, color: Color(0xFF00E5FF), size: 18),
@@ -360,7 +488,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
-              color: const Color(0xFF00C853).withOpacity(0.15),
+              color: const Color(0xFF00C853).withValues(alpha: 0.15),
               borderRadius: BorderRadius.circular(6),
             ),
             child: const Row(
@@ -378,12 +506,12 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
   }
 
   Widget _buildFooter() {
-    return Row(
+    return const Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Icon(Icons.lock_outline, size: 14, color: Color(0xFF445566)),
-        const SizedBox(width: 6),
-        const Text(
+        Icon(Icons.lock_outline, size: 14, color: Color(0xFF445566)),
+        SizedBox(width: 6),
+        Text(
           'Sem internet • 100% offline',
           style: TextStyle(fontSize: 12, color: Color(0xFF445566)),
         ),

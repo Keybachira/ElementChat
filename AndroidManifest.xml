@@ -25,7 +25,7 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
 
     <application
-        android:label="BT Chat"
+        android:label="Element Chat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

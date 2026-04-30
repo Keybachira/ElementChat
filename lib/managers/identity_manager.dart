@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 enum VisibilityMode { visible, hidden }
@@ -32,15 +34,25 @@ class IdentityManager {
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     _loadSettings();
-    
-    final info = await _bt.address;
-    _myAddress = info ?? 'unknown';
-    
+
+    try {
+      final status = await Permission.bluetoothConnect.request();
+      if (status.isGranted) {
+        final info = await _bt.address;
+        _myAddress = info ?? 'unknown';
+      } else {
+        _myAddress = 'no_permission';
+      }
+    } catch (e) {
+      debugPrint('Erro ao inicializar Bluetooth: $e');
+      _myAddress = 'error';
+    }
+
     if (_encryptionKey.isEmpty) {
       _generateEncryptionKey();
       _saveSettings();
     }
-    
+
     _updateController.add(this);
   }
 

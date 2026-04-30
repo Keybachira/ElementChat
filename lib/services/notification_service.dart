@@ -51,7 +51,7 @@ class NotificationService {
 
     const androidDetails = AndroidNotificationDetails(
       'btchat_messages',
-      'Mensagens BT Chat',
+      'Mensagens Element Chat',
       channelDescription: 'Notificações de mensagens recebidas',
       importance: Importance.high,
       priority: Priority.high,
@@ -89,7 +89,7 @@ class NotificationService {
 
     const androidDetails = AndroidNotificationDetails(
       'btchat_connections',
-      'Conexões BT Chat',
+      'Conexões Elememt Chat',
       channelDescription: 'Notificações de conexões Bluetooth',
       importance: Importance.defaultImportance,
       priority: Priority.defaultPriority,
@@ -114,7 +114,7 @@ class NotificationService {
 
     const androidDetails = AndroidNotificationDetails(
       'btchat_alerts',
-      'Alertas BT Chat',
+      'Alertas Element Chat',
       channelDescription: 'Alertas de conexão',
       importance: Importance.high,
       priority: Priority.high,
